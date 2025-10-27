@@ -66,11 +66,39 @@ void get_binary_number(uint64_t number)
 
 }
 
+uint64_t reverse_triplets(uint64_t original)
+{
+    uint64_t result = 0;
+
+    // Проходим по всем триплетам (в 64-битном числе 21 триплет + 1 бит остатка)
+    for (int i = 0; i < 21; i++) {
+        // Извлекаем текущий триплет
+        uint64_t triplet = (original >> (i * 3)) & 0x7; // 0x7 = 111 в двоичной
+
+        // Проверяем, нужно ли инвертировать порядок битов 
+        if ((i + 1) % 3 == 0) {
+            // Инвертируем порядок битов в триплете 
+            uint64_t reversed_triplet = 0;
+            reversed_triplet |= (triplet & 0x1) << 2; // Младший бит становится старшим
+            reversed_triplet |= (triplet & 0x2); // Средний бит остается на месте
+            reversed_triplet |= (triplet & 0x4) >> 2; // Старший бит становится младшим
+
+            triplet = reversed_triplet;
+        }
+
+        // Добавляем обработанный триплет в результат
+        result |= (triplet << (i * 3));
+    }
+
+    return result;
+}
+
 int main(int argc, char* argv[])
 {
     uint64_t number = check_available_input(argc, argv);
     get_binary_number(number);
-
+    number = reverse_triplets(number);
+    get_binary_number(number);
     
     return 0;
 }
